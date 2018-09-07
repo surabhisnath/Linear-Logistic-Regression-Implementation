@@ -2,8 +2,10 @@
 import pandas
 import numpy
 import math
-from sklearn.model_selection import KFold
 import matplotlib.pyplot
+import statistics
+from sklearn.model_selection import KFold
+
 
 def graddesc(x, y, parameters):
     lengthx = len(x)
@@ -11,7 +13,7 @@ def graddesc(x, y, parameters):
     learningrate = 0.0009
     RMSEarrx = []
     RMSEarry = []
-    for i in range(1000):
+    for i in range(10000):
         diffx = []
         diffy = []
         squareddiffx = []
@@ -38,7 +40,7 @@ def graddesc(x, y, parameters):
         diffy = numpy.array(diffy)
         squareddiffy = numpy.array(squareddiffy)
         sumofsquareddiffy = sum(squareddiffy)
-        RMSEarry.append(math.sqrt(sumofsquareddiffy/lengthx))
+        RMSEarry.append(math.sqrt(sumofsquareddiffy/lengthy))
 
 
         # Update parameters
@@ -69,25 +71,36 @@ for i in range(0,numfeatures):
 col1 = numpy.ones(numentries)
 x = numpy.concatenate((col1[:,numpy.newaxis],x),axis=1)
 
-# Define theta(i)s
-parameters = numpy.zeros(14)
-
 # Perform KFold
 
 partitions = KFold(5)
 partitions.get_n_splits(x)
 
 
+finalRMSEx = []
+finalRMSEy = []
+
 for i,j in partitions.split(x):
+
+    # Define theta(i)s
+    parameters = numpy.zeros(14)
+    
     train = x[i]
     val = x[j]
-    numiter = list(range(1000))
-    numiter.append(1000)
-    numiter.remove(0)
+    numiter = list(range(1,10001))
     t = graddesc(train,val,parameters)
 
+    matplotlib.pyplot.figure(1)
     matplotlib.pyplot.plot(numiter,t[0])
-    #matplotlib.pyplot.plot(numiter,t[1])
+    finalRMSEx.append(t[0][len(t[0])-1])
+    matplotlib.pyplot.figure(2)
+    matplotlib.pyplot.plot(numiter,t[1])
+    finalRMSEy.append(t[1][len(t[1])-1])
 
-print("hello") 
+
+print("Mean and standard deviation of RMS error for train set for 5 folds:", end=" ")
+print(statistics.mean(finalRMSEx)," ","+-"," ",statistics.stdev(finalRMSEx))
+print("Mean and standard deviation of RMS error for validation set for 5 folds:", end=" ")
+print(statistics.mean(finalRMSEy)," ","+-"," ",statistics.stdev(finalRMSEy))
+
 matplotlib.pyplot.show()

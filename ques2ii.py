@@ -25,7 +25,7 @@ for i in range(0,10):
             trainyeach[i,j] = 1
         else:
             trainyeach[i,j] = 0
-    model = LogisticRegression(penalty='l2')
+    model = LogisticRegression(penalty='l1')
     model.fit(trainx,trainyeach[i])
     parameters = model.coef_
 

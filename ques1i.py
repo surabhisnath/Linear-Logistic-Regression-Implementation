@@ -10,7 +10,7 @@ from sklearn.model_selection import KFold
 def graddesc(x, y, parameters):
     lengthx = len(x)
     lengthy = len(y)
-    learningrate = 0.001
+    learningrate = 0.4
     RMSEarrx = []
     RMSEarry = []
     for i in range(numiterations):
@@ -56,7 +56,7 @@ def graddesc(x, y, parameters):
 numentries = 506
 numfeatures = 13
 lastcolumn = 14
-numiterations = 5000
+numiterations = 1000
 numfolds = 5
 
 # Put data into numpy array

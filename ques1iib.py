@@ -13,7 +13,7 @@ from sklearn import linear_model
 
 def logregr(x, parameters):
     lengthx = len(x)
-    learningrate = 0.4
+    learningrate = 0.3
     RMSEarrx = []
     for i in range(numiterations):
         diffx = []
@@ -64,8 +64,10 @@ for i in range(0,numfeatures):
 col1 = numpy.ones(numentries)
 x = numpy.concatenate((col1[:,numpy.newaxis],x),axis=1)
 
-testdata = x[405:506,:]
-x = x[0:405,:]
+testdata = x[0:103,:]
+x = x[103:506,:]
+#testdata = x[405:506,:]
+#x = x[0:405,:]
 
 classifier = GridSearchCV(linear_model.Lasso(),{'alpha':[25,10,2,1,0.8,0.5,0.3,0.1,0.05,0.03]},"neg_mean_squared_error",cv=5)
 classifier.fit(x[:,0:14],x[:,14])

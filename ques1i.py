@@ -10,7 +10,7 @@ from sklearn.model_selection import KFold
 def graddesc(x, y, parameters):
     lengthx = len(x)
     lengthy = len(y)
-    learningrate = 0.4
+    learningrate = 0.3
     RMSEarrx = []
     RMSEarry = []
     for i in range(numiterations):

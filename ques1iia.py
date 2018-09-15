@@ -1,4 +1,4 @@
-# RIDGE REGRESSION
+# RIDGE REGULARIZATION
 
 # Import libraries
 import pandas
@@ -11,9 +11,9 @@ from sklearn.model_selection import GridSearchCV
 from sklearn import linear_model
 
 
-def logregr(x, parameters):
+def graddescl2(x, parameters):
     lengthx = len(x)
-    learningrate = 0.3
+    learningrate = 0.05
     RMSEarrx = []
     for i in range(numiterations):
         diffx = []
@@ -70,13 +70,15 @@ x = x[103:506,:]
 #x = x[0:405,:]
 
 
-classifier = GridSearchCV(linear_model.Ridge(),{'alpha':[25,10,2,1,0.8,0.5,0.3,0.1,0.05,0.03]},"neg_mean_squared_error",cv=5)
+classifier = GridSearchCV(linear_model.Ridge(),{'alpha':[25,10,3.5,3,2.5,2,1.5,1,0.8,0.5,0.3,0.1,0.05,0.03]},"neg_mean_squared_error",cv=5)
 classifier.fit(x[:,0:14],x[:,14])
 lambdaval = classifier.best_params_.get('alpha')
+print("Lambda value: ", end='')
+print(lambdaval)
 
 parameters = numpy.zeros(numfeatures+1)
 numiter = list(range(1,numiterations+1))
-t = logregr(x,parameters)
+t = graddescl2(x,parameters)
 
 # Find test RMSE
 diff = []
@@ -96,20 +98,7 @@ RMSEtest = math.sqrt(sumofsquareddiff/len(testdata))
 print("RMSE error of test set is: ",end="")
 print(RMSEtest)
 matplotlib.pyplot.plot(numiter,t)
+matplotlib.pyplot.xlabel('Number of Iterations')
+matplotlib.pyplot.ylabel('RMSE Error')
+matplotlib.pyplot.title('RMSE vs Number of Iterations for Held Out Test set with L2 Regularization')
 matplotlib.pyplot.show()
-
-
-'''
-output = classifier.predict(testdata[:,0:14]);
-
-print(output)
-print(testdata[:,14])
-
-sumofsquarederrors = 0
-for i in range(0,len(output)):
-    sumofsquarederrors = sumofsquarederrors + ((output[i]-testdata[i,14])*(output[i]-testdata[i,14]))
-
-meansumofsquarederrors = sumofsquarederrors/len(output)
-
-print(math.sqrt(meansumofsquarederrors))
-'''

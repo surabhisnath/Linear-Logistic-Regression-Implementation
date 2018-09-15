@@ -3,16 +3,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 import numpy
 import math
+import random
+
+random.seed(1)
 
 mnist = fetch_mldata('MNIST original')
 
 trainx,testx,trainy,testy = train_test_split(mnist.data,mnist.target,test_size=1/7)
-'''
-trainx = trainx[:1000]
-trainy = trainy[:1000]
-testx = testx[:100]
-testy = testy[:100]
-'''
 
 trainyeach = numpy.zeros([10,len(trainy)])
 arrofy = testy
@@ -25,7 +22,7 @@ for i in range(0,10):
             trainyeach[i,j] = 1
         else:
             trainyeach[i,j] = 0
-    model = LogisticRegression(penalty='l2')
+    model = LogisticRegression(penalty='l2',solver='lbfgs')
     model.fit(trainx,trainyeach[i])
     parameters = model.coef_
 
@@ -62,23 +59,11 @@ for m in range(0,len(trainy)):
     if trainy[m] == predictedytrain[m]:
         restrain[1,index] = restrain[1,index] + 1;
 
-#print(restest[0])
-#print(restest[1])
-#print(testy)
-#print(predictedytest)
-
 classvizeacctest = restest[1]/restest[0]*100
 differencestest = restest[0]-restest[1]
 print(classvizeacctest)
 testacctest = (1 - sum(differencestest)/len(testy))*100
 print(testacctest)
-
-
-
-#print(restrain[0])
-#print(restrain[1])
-#print(trainy)
-#print(predictedytrain)
 
 classvizeacctrain = restrain[1]/restrain[0]*100
 differencestrain = restrain[0]-restrain[1]

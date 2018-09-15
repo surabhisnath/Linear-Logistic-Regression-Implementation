@@ -7,10 +7,20 @@ import statistics
 from sklearn.model_selection import KFold
 
 
-def graddesc(x, y, parameters):
+# Define variables
+numentries = 506
+numfeatures = 13
+lastcolumn = 14
+numiterations = 1000
+numfolds = 5
+
+plotarrtrain = numpy.zeros([numfolds,numiterations])
+plotarrval = numpy.zeros([numfolds,numiterations])
+
+def graddesc(x, y, parameters,cnt):
     lengthx = len(x)
     lengthy = len(y)
-    learningrate = 0.3
+    learningrate = 0.05
     RMSEarrx = []
     RMSEarry = []
     for i in range(numiterations):
@@ -49,15 +59,16 @@ def graddesc(x, y, parameters):
 
     RMSEarrx = numpy.array(RMSEarrx)
     RMSEarry = numpy.array(RMSEarry)
+    
+    plotarrtrain[cnt] = RMSEarrx
+    plotarrval[cnt] = RMSEarry
 
     return RMSEarrx,RMSEarry
     
-# Define variables
-numentries = 506
-numfeatures = 13
-lastcolumn = 14
-numiterations = 1000
-numfolds = 5
+
+
+
+
 
 # Put data into numpy array
 data = pandas.read_csv('C:\\Users\\Surabhi\\Desktop\\IIITD\\5th SEM\\ML\\Assignments\\boston_CSV.csv')
@@ -81,6 +92,8 @@ partitions.get_n_splits(x)
 finalRMSEx = []
 finalRMSEy = []
 
+cnt = 0
+numiter = list(range(1,numiterations+1))
 for i,j in partitions.split(x):
 
     # Define theta(i)s
@@ -88,15 +101,20 @@ for i,j in partitions.split(x):
     
     train = x[i]
     val = x[j]
-    numiter = list(range(1,numiterations+1))
-    t = graddesc(train,val,parameters)
-
+    t = graddesc(train,val,parameters,cnt)
+    cnt+=1
     matplotlib.pyplot.figure(1)
     matplotlib.pyplot.plot(numiter,t[0])
     finalRMSEx.append(t[0][len(t[0])-1])
+    matplotlib.pyplot.xlabel('Number of Iterations')
+    matplotlib.pyplot.ylabel('RMSE Error')
+    matplotlib.pyplot.title('RMSE for the 5 Train Folds vs Number of Iterations')
     matplotlib.pyplot.figure(2)
     matplotlib.pyplot.plot(numiter,t[1])
     finalRMSEy.append(t[1][len(t[1])-1])
+    matplotlib.pyplot.xlabel('Number of Iterations')
+    matplotlib.pyplot.ylabel('RMSE Error')
+    matplotlib.pyplot.title('RMSE for the 5 Validation Folds vs Number of Iterations')
 
 print(finalRMSEx)
 print(finalRMSEy)
@@ -105,4 +123,29 @@ print(statistics.mean(finalRMSEx)," ","+-"," ",statistics.stdev(finalRMSEx))
 print("Mean and standard deviation of RMS error for validation set for 5 folds:", end=" ")
 print(statistics.mean(finalRMSEy)," ","+-"," ",statistics.stdev(finalRMSEy))
 
+trainmean = numpy.mean(plotarrtrain,axis=0)
+trainstd = numpy.mean(plotarrtrain,axis=0)
+valmean = numpy.std(plotarrval,axis=0)
+valstd = numpy.std(plotarrval,axis=0)
+
+numiter = numpy.array(numiter)
+tempnumiter = numiter[0::10]
+temptrainmean = trainmean[0::10]
+temptrainstd = trainstd[0::10]
+tempvalstd = valstd[0::10]
+tempvalmean = valmean[0::10]
+
+matplotlib.pyplot.figure(3)
+matplotlib.pyplot.bar(tempnumiter,temptrainmean,yerr=temptrainstd)
+matplotlib.pyplot.plot(numiter,trainmean)
+matplotlib.pyplot.xlabel('Number of Iterations')
+matplotlib.pyplot.ylabel('RMSE Error')
+matplotlib.pyplot.title('Mean RMSE for the 5 Train Folds with Standard Deviation Error Bars vs Number of Iterations')
+matplotlib.pyplot.figure(4)
+matplotlib.pyplot.bar(tempnumiter,tempvalmean,yerr=tempvalstd)
+matplotlib.pyplot.plot(numiter,valmean)
+matplotlib.pyplot.xlabel('Number of Iterations')
+matplotlib.pyplot.ylabel('RMSE Error')
+matplotlib.pyplot.title('Mean RMSE for the 5 Validation Folds with Standard Deviation Error Bars vs Number of Iterations')
+#matplotlib.pyplot.axis([-2,1000,0,20])
 matplotlib.pyplot.show()
